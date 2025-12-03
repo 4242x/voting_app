@@ -15,7 +15,6 @@ async function main() {
     console.log(`${index + 1}. ${name}`);
   });
 
-  // Deploy the contract
   const Voting = await hre.ethers.getContractFactory("Voting");
   const voting = await Voting.deploy(candidateNames);
 
@@ -26,7 +25,6 @@ async function main() {
   console.log("\n✅ Voting contract deployed successfully!");
   console.log(`📍 Contract Address: ${contractAddress}`);
 
-  // Verify the deployment by fetching candidates
   console.log("\nVerifying deployment...");
   const allCandidates = await voting.getAllCandidates();
   
@@ -35,7 +33,6 @@ async function main() {
     console.log(`${index}. ${candidate.name} - Votes: ${candidate.voteCount}`);
   });
 
-  // Save deployment info
   const deploymentInfo = {
     contractAddress: contractAddress,
     network: hre.network.name,
@@ -47,7 +44,6 @@ async function main() {
   console.log("\n📋 Deployment Summary:");
   console.log(JSON.stringify(deploymentInfo, null, 2));
 
-  // For verification on block explorers (optional)
   if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {
     console.log("\n⏳ Waiting for block confirmations...");
     await voting.deploymentTransaction().wait(6);

@@ -1,38 +1,57 @@
-import hardhatToolboxMochaEthersPlugin from "@nomicfoundation/hardhat-toolbox-mocha-ethers";
-import { configVariable, defineConfig } from "hardhat/config";
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
-export default defineConfig({
-  plugins: [hardhatToolboxMochaEthersPlugin],
+module.exports = {
   solidity: {
-    profiles: {
-      default: {
-        version: "0.8.28",
-      },
-      production: {
-        version: "0.8.28",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
+    version: "0.8.0",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
       },
     },
   },
+
   networks: {
-    hardhatMainnet: {
-      type: "edr-simulated",
-      chainType: "l1",
+    // Local Hardhat network (default)
+    hardhat: {
+      chainId: 31337,
     },
-    hardhatOp: {
-      type: "edr-simulated",
-      chainType: "op",
+
+    // Local node (when you run 'npx hardhat node')
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      chainId: 31337,
     },
+
+    // Sepolia testnet
     sepolia: {
-      type: "http",
-      chainType: "l1",
-      url: configVariable("SEPOLIA_RPC_URL"),
-      accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
+      url: process.env.SEPOLIA_RPC_URL || "",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
+
+    // Mumbai testnet (Polygon)
+    mumbai: {
+      url: process.env.MUMBAI_RPC_URL || "https://rpc-mumbai.maticvigil.com",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 80001,
     },
   },
-});
+
+  // For contract verification on Etherscan
+  etherscan: {
+    apiKey: {
+      sepolia: process.env.ETHERSCAN_API_KEY || "",
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+    },
+  },
+
+  // Path configurations
+  paths: {
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts",
+  },
+};
